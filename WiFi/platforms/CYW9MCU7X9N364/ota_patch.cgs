@@ -1,0 +1,21 @@
+# DO NOT EDIT MANUALLY! FW2 VERSION
+DEFINITION <configdef20739A0.hdf>
+DIRECT_LOAD = "fail_safe_ota_init_function"
+{
+    "Address" = 0x00270400
+    "Data" =
+        COMMENTED_BYTES
+        {
+            <hex>
+            00 b5 0f a0 85 b0 d0 e9 00 10 cd e9 03 10 0e 49
+            41 f6 f4 70 09 78 04 29 00 d1 0c 48 0c 22 69 46
+            e2 f5 fe ff 0c 28 09 d1 08 22 03 a9 68 46 3a f6
+            27 fc 00 28 02 d1 06 49 02 98 08 61 05 b0 00 bd
+            aa 55 f0 0f 68 e5 97 d2 68 05 20 00 f4 1f 50 00
+            18 05 20 00
+        } END_COMMENTED_BYTES
+}
+ENTRY "Function Call" = "fail_safe_ota_init_function early call"
+{
+	"Address" = 0x00270400 
+}
