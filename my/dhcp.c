@@ -42,6 +42,8 @@ ethernet_input(struct pbuf *p, struct netif *netif);
 #define COUNTRY              WICED_COUNTRY_AUSTRALIA    /* 选择城市 据说澳大利亚的信号更强一些，这里选择为澳大利亚 */
 
 struct netif wiced_if;
+struct dhcp netif_dhcp;
+
 ip4_addr_t ipaddr, netmask, gw;
 
 static wiced_ssid_t ap_ssid =
@@ -90,6 +92,7 @@ void dhcp_main(uint8_t* ssid,uint8_t* password)
     ip4_addr_set_zero( &ipaddr );
     ip4_addr_set_zero( &netmask );
 
+//    PRINTF("1 wiced_if:0x%x dhcp:0x%x\n",&wiced_if,wiced_if.client_data[0]);
     if ( NULL == netif_add( &wiced_if, &ipaddr, &netmask, &gw, (void*) WWD_STA_INTERFACE, ethernetif_init, ethernet_input ) )
     {
         WPRINT_APP_ERROR(( "Could not add network interface\n" ));
@@ -98,9 +101,9 @@ void dhcp_main(uint8_t* ssid,uint8_t* password)
 
      netif_set_up( &wiced_if );
 
-     struct dhcp netif_dhcp;
     WPRINT_APP_INFO(("Obtaining IP address via DHCP\n"));
     dhcp_set_struct( &wiced_if, &netif_dhcp );
+  //  PRINTF("3 wiced_if:0x%x dhcp:0x%x\n",&wiced_if,wiced_if.client_data[0]);
     if (dhcp_start( &wiced_if )){
 	    WPRINT_APP_INFO(("start dhcp failed\n"));
 	    return;
@@ -113,6 +116,7 @@ void dhcp_main(uint8_t* ssid,uint8_t* password)
     }
   //  WPRINT_APP_INFO(("dhcp ok\n"));
     WPRINT_APP_INFO( ( "Network ready IP: %s\n", ip4addr_ntoa(netif_ip4_addr(&wiced_if))));
+ //   PRINTF("2 wiced_if:0x%x dhcp:0x%x\n",&wiced_if,wiced_if.client_data[0]);
 
     while(0)
     {
