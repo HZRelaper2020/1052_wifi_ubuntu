@@ -28,6 +28,13 @@ typedef uintptr_t mem_ptr_t;
 #define SYS_MBOX_NULL ((xQueueHandle)0)
 #define SYS_SEM_NULL  ((xSemaphoreHandle)0)
 
+#define SYS_ARCH_TIMEOUT 0xffffffffUL
+
+/** sys_mbox_tryfetch() returns SYS_MBOX_EMPTY if appropriate.
+ * For now we use the same magic value, but we allow this to change in future.
+ */
+#define SYS_MBOX_EMPTY SYS_ARCH_TIMEOUT
+
 typedef SemaphoreHandle_t /*@only@*/sys_sem_t;
 typedef QueueHandle_t /*@only@*/sys_mbox_t;
 typedef TaskHandle_t /*@only@*/sys_thread_t;

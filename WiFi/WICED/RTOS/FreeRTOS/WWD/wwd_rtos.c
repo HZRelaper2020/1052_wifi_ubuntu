@@ -153,10 +153,13 @@ wwd_result_t host_rtos_finish_thread( host_thread_type_t* thread )
 wwd_result_t host_rtos_join_thread( host_thread_type_t* thread )
 {
     /*@-infloopsuncon@*/ /* Not an infinite loop - signalled by other thread */
+#if 0
     while ( xTaskIsTaskFinished( *thread ) != pdTRUE )
     {
         (void) host_rtos_delay_milliseconds( (uint32_t) 10 );
     }
+#endif
+    ERROR("xTaskIsTaskFinished ignored\n");
     /*@+infloopsuncon@*/
     return WWD_SUCCESS;
 }

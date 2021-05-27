@@ -260,7 +260,7 @@ tcp_pbuf_prealloc(pbuf_layer layer, u16_t length, u16_t max_length,
     }
   }
 #endif /* LWIP_NETIF_TX_SINGLE_PBUF */
-  p = pbuf_alloc(layer, alloc, PBUF_RAM);
+  p = pbuf_alloc(layer+2, alloc, PBUF_RAM);
   if (p == NULL) {
     return NULL;
   }
@@ -1073,7 +1073,7 @@ tcp_enqueue_flags(struct tcp_pcb *pcb, u8_t flags)
   optlen = LWIP_TCP_OPT_LENGTH_SEGMENT(optflags, pcb);
 
   /* Allocate pbuf with room for TCP header + options */
-  if ((p = pbuf_alloc(PBUF_TRANSPORT, optlen, PBUF_RAM)) == NULL) {
+  if ((p = pbuf_alloc(2+PBUF_TRANSPORT, optlen, PBUF_RAM)) == NULL) {
     tcp_set_flags(pcb, TF_NAGLEMEMERR);
     TCP_STATS_INC(tcp.memerr);
     return ERR_MEM;
@@ -1822,7 +1822,7 @@ tcp_output_alloc_header_common(u32_t ackno, u16_t optlen, u16_t datalen,
   struct tcp_hdr *tcphdr;
   struct pbuf *p;
 
-  p = pbuf_alloc(PBUF_IP, TCP_HLEN + optlen + datalen, PBUF_RAM);
+  p = pbuf_alloc(2+PBUF_IP, TCP_HLEN + optlen + datalen, PBUF_RAM);
   if (p != NULL) {
     LWIP_ASSERT("check that first pbuf can hold struct tcp_hdr",
                 (p->len >= TCP_HLEN + optlen));

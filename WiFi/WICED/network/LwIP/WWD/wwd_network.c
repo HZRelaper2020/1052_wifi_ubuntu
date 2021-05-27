@@ -217,6 +217,7 @@ static err_t low_level_output( struct netif *netif, /*@only@*/ struct pbuf *p )
         wwd_network_send_ethernet_data( p, (wwd_interface_t) netif->state );
 
         LINK_STATS_INC( link.xmit );
+//	PRINTF("send ok\n");
 
         return (err_t) ERR_OK;
     }

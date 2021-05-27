@@ -225,7 +225,6 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
   struct pbuf *p;
   u16_t offset = (u16_t)layer;
   LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc(length=%"U16_F")\n", length));
-
   switch (type) {
     case PBUF_REF: /* fall through */
     case PBUF_ROM:
@@ -295,6 +294,14 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
       return NULL;
   }
   LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc(length=%"U16_F") == %p\n", length, (void *)p));
+  static int anum=0;
+  anum++;
+  if (anum > 60){
+//	  DbgConsole_Printf("%03d alloc 0x%08x 0x%08x %d len:%d\n",anum,p,p->payload,layer,length);
+	  if (layer >0){
+		  int i=0;
+	  }
+  }
   return p;
 }
 
@@ -734,6 +741,7 @@ pbuf_free(struct pbuf *p)
                 ("pbuf_free(p == NULL) was called.\n"));
     return 0;
   }
+//  DbgConsole_Printf("free  0x%08x\n",p);
   LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_free(%p)\n", (void *)p));
 
   PERF_START;

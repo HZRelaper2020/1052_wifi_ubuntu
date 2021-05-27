@@ -18,6 +18,8 @@ add_compile_options(
         -mfloat-abi=softfp
         -mfpu=fpv5-d16
         -mcpu=cortex-m7
+	-mthumb
+	#	-O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections  -g3
 )
 endif()
 

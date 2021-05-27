@@ -78,7 +78,7 @@
  * systems, this should be defined to something less resource-consuming.
  */
 #ifndef LWIP_PLATFORM_DIAG
-#define LWIP_PLATFORM_DIAG(x) do {printf x;} while(0)
+#define LWIP_PLATFORM_DIAG(x) do {DbgConsole_Printf x;} while(0)
 #include <stdio.h>
 #include <stdlib.h>
 #endif
@@ -88,9 +88,10 @@
  * in turn pull in a lot of standard libary code. In resource-constrained 
  * systems, this should be defined to something less resource-consuming.
  */
+#include <assert.h>
 #ifndef LWIP_PLATFORM_ASSERT
-#define LWIP_PLATFORM_ASSERT(x) do {printf("Assertion \"%s\" failed at line %d in %s\n", \
-                                     x, __LINE__, __FILE__); fflush(NULL); abort();} while(0)
+#define LWIP_PLATFORM_ASSERT(x) do {DbgConsole_Printf("Assertion \"%s\" failed at line %d in %s\n", \
+                                     x, __LINE__, __FILE__);assert(0); fflush(NULL); abort();} while(0)
 #include <stdio.h>
 #include <stdlib.h>
 #endif
