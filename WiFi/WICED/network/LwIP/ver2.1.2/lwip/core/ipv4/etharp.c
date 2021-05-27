@@ -1111,7 +1111,7 @@ etharp_raw(struct netif *netif, const struct eth_addr *ethsrc_addr,
   LWIP_ASSERT("netif != NULL", netif != NULL);
 
   /* allocate a pbuf for the outgoing ARP request packet */
-  p = pbuf_alloc(PBUF_LINK, SIZEOF_ETHARP_HDR, PBUF_RAM);
+  p = pbuf_alloc(30+PBUF_LINK, SIZEOF_ETHARP_HDR, PBUF_RAM);
   /* could allocate a pbuf for an ARP request? */
   if (p == NULL) {
     LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_SERIOUS,
