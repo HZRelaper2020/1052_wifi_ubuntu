@@ -187,6 +187,7 @@ static void low_level_init( /*@partial@*/ struct netif *netif )
  *       to become availale since the stack doesn't retry to send a packet
  *       dropped because of memory failure (except for the TCP timers).
  */
+
 static err_t low_level_output( struct netif *netif, /*@only@*/ struct pbuf *p )
 {
     /*@-noeffect@*/
@@ -196,14 +197,20 @@ static err_t low_level_output( struct netif *netif, /*@only@*/ struct pbuf *p )
     if ( ( (wiced_interface_t) netif->state  == WICED_ETHERNET_INTERFACE ) ||
          ( wwd_wifi_is_ready_to_transceive( (wwd_interface_t) netif->state ) == WWD_SUCCESS ) )
     {
+#if 0
         /* Take a reference to this packet */
         pbuf_ref( p );
 
-        LWIP_ASSERT( "No chained buffers", ( ( p->next == NULL ) && ( ( p->tot_len == p->len ) ) ) );
+       // LWIP_ASSERT( "No chained buffers", ( ( p->next == NULL ) && ( ( p->tot_len == p->len ) ) ) );
 	if (!( ( p->next == NULL ) && ( ( p->tot_len == p->len ) ) ) ){
+		pbuf_free(p);
 		ERROR("p has next buffer\n");
-		return -1;
+		return ERR_INPROGRESS;
 	}
+
+	static int snum = 0;
+	snum++;
+	PRINTF("%04d send ok\n",snum);
 
 #if 0
 	PRINTF("send len:%d\n",p->tot_len);
@@ -211,13 +218,73 @@ static err_t low_level_output( struct netif *netif, /*@only@*/ struct pbuf *p )
 		if (i%16 == 0) PRINTF("\n");
 		PRINTF("%02x ",*(uint8_t*)(p->payload+i));
 	}
-	PRINTF("\n\n");
 #endif
 
         wwd_network_send_ethernet_data( p, (wwd_interface_t) netif->state );
 
         LINK_STATS_INC( link.xmit );
-//	PRINTF("send ok\n");
+#else
+	if (p->tot_len == p->len){  // single buffer
+            pbuf_ref( p );
+	    wwd_network_send_ethernet_data( p, (wwd_interface_t) netif->state );
+	}else{
+
+            pbuf_ref( p );
+
+	    struct pbuf* pbuf;
+
+	    while(1){
+		    int type = 0x280;
+		    pbuf = pbuf_alloc(70,p->tot_len,type);
+		    if (pbuf->len != pbuf->tot_len){
+			PRINTF("p->len:%d p->tot_len:%d\n",pbuf->len,pbuf->tot_len);
+		    }else{
+		        break;
+		    }
+
+		    struct pbuf* pbuf1 = pbuf;
+		    pbuf = pbuf_alloc(70,p->tot_len,type);
+		    if (pbuf->len != pbuf->tot_len){
+			pbuf_free(pbuf1);
+			PRINTF("p->len:%d p->tot_len:%d\n",pbuf->len,pbuf->tot_len);
+		    }else{
+			break;
+		    }
+
+		    struct pbuf* pbuf2= pbuf;
+		    pbuf = pbuf_alloc(30,p->tot_len,type);
+		    if (pbuf->len != pbuf->tot_len){
+			pbuf_free(pbuf1);
+			pbuf_free(pbuf2);
+			pbuf_free(pbuf);
+			PRINTF("p->len:%d p->tot_len:%d\n",pbuf->len,pbuf->tot_len);
+		    }else{
+			pbuf_free(pbuf1);
+			pbuf_free(pbuf2);
+			break;
+		    }
+
+        	    LWIP_ASSERT( "alloc chian buffer to single buffer failed", 0);
+		    return -1;
+	    }
+
+	    //PRINTF("p->tot_len:%d 0x%08x\n",p->tot_len,pbuf);
+
+	    // copy buffer
+	    struct pbuf* q;
+	    int curlen=0;
+	    for (q = p;q!= NULL;q = q->next){
+		    memcpy(pbuf->payload+curlen,q->payload,q->len);
+		    curlen += q->len;
+	    }
+
+	    wwd_network_send_ethernet_data( pbuf, (wwd_interface_t) netif->state );
+
+	    pbuf_free(p);
+	}
+
+        LINK_STATS_INC( link.xmit );
+#endif
 
         return (err_t) ERR_OK;
     }
