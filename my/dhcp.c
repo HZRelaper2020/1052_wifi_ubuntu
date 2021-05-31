@@ -41,10 +41,10 @@ ethernet_input(struct pbuf *p, struct netif *netif);
 
 #define COUNTRY              WICED_COUNTRY_AUSTRALIA    /* 选择城市 据说澳大利亚的信号更强一些，这里选择为澳大利亚 */
 
-struct netif wiced_if;
-struct dhcp netif_dhcp;
+static struct netif wiced_if;
+static struct dhcp netif_dhcp;
 
-ip4_addr_t ipaddr, netmask, gw;
+static ip4_addr_t ipaddr, netmask, gw;
 
 static wiced_ssid_t ap_ssid =
 {

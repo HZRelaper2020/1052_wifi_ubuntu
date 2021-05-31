@@ -359,7 +359,7 @@ static void wwd_thread_func( wwd_thread_arg_t /*@unused@*/thread_input ) /*@glob
         }
         while (tx_status != 0);
         /* Sleep till WLAN do something */
-	host_rtos_delay_milliseconds(3);
+	host_rtos_delay_milliseconds(10);
         wwd_wait_for_wlan_event( &wwd_transceive_semaphore );
         WWD_LOG(("Wiced Thread: Woke\n"));
     }

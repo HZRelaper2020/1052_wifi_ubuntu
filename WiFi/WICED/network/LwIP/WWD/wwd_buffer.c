@@ -125,7 +125,7 @@ wwd_result_t internal_host_buffer_get( wiced_buffer_t * buffer, wwd_buffer_dir_t
         {
             break;
         }else{
-		ERROR("pbuf alloc failed\n");
+		ERROR("pbuf alloc failed type:0x%x\n",( direction == WWD_NETWORK_RX ) ? PBUF_POOL_RX : PBUF_POOL_TX );
 	}
 
         /* Attempt to allocate via application supplied pools */

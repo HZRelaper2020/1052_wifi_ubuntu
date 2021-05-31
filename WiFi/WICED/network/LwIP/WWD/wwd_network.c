@@ -226,6 +226,13 @@ static err_t low_level_output( struct netif *netif, /*@only@*/ struct pbuf *p )
 #else
 	if (p->tot_len == p->len){  // single buffer
             pbuf_ref( p );
+	    if (0){
+		PRINTF("send len:%d\n",p->tot_len);
+		for (int i=0;i<p->tot_len;i++){
+			if (i%16 == 0) PRINTF("\n");
+			PRINTF("%02x ",*(uint8_t*)(p->payload+i));
+		} PRINTF("\n\n");
+	    }
 	    wwd_network_send_ethernet_data( p, (wwd_interface_t) netif->state );
 	}else{
 
@@ -372,17 +379,16 @@ void host_network_process_ethernet_data( /*@only@*/ wiced_buffer_t buffer, wwd_i
                 return;
             }
 
-#if 0
-	    struct pbuf* p =buffer;
-	    PRINTF("recv len:%d  %d\n",p->tot_len,p->len);
-#if 0
-        for (int i=0;i<p->tot_len;i++){
-                if (i%16 == 0) PRINTF("\n");
-                PRINTF("%02x ",*((uint8_t*)p->payload+i));
-        }
-        PRINTF("\n\n");
-#endif
-#endif
+	    if (0){
+		struct pbuf* p =buffer;
+	        PRINTF("recv len:%d  %d\n",p->tot_len,p->len);
+		for (int i=0;i<p->tot_len;i++){
+			if (i%16 == 0) PRINTF("\n");
+			PRINTF("%02x ",*((uint8_t*)p->payload+i));
+		}
+		PRINTF("\n\n");
+	    }
+
             /* Send to packet to tcpip_thread to process */
             if ( tcpip_input( buffer, tmp_netif ) != ERR_OK )
             {
