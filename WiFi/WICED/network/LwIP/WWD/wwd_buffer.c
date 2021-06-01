@@ -121,6 +121,9 @@ wwd_result_t internal_host_buffer_get( wiced_buffer_t * buffer, wwd_buffer_dir_t
 	static int anum=0;
 	anum++;
 	//PRINTF("%03d alloc 0x%08x 0x%08x %d %x\n",anum,*buffer,(*buffer)->payload,size,( direction == WWD_NETWORK_RX ) ? PBUF_POOL_RX : PBUF_POOL_TX);
+	if ((*buffer)->tot_len != (*buffer)->len){
+	    ERROR("tot_len:%d len:%d\n",(*buffer)->tot_len , (*buffer)->len);
+	}
 	wiced_assert("tot_len != len",(*buffer)->tot_len == (*buffer)->len);
 
         if ( *buffer != NULL )
