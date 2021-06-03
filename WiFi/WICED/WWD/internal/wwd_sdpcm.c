@@ -535,6 +535,7 @@ void wwd_network_send_ethernet_data( /*@only@*/ wiced_buffer_t buffer, wwd_inter
     {
         WPRINT_WWD_DEBUG(("Unable to adjust header space\n"));
 	PRINTF("Unable to adjust header space\n");
+        wiced_assert( "Unable to adjust header space", 0 );
         host_buffer_release( buffer, WWD_NETWORK_TX );
         return;
     }

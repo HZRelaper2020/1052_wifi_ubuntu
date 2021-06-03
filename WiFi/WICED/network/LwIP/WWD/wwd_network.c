@@ -224,7 +224,7 @@ static err_t low_level_output( struct netif *netif, /*@only@*/ struct pbuf *p )
 
         LINK_STATS_INC( link.xmit );
 #else
-	if (p->tot_len == p->len){  // single buffer
+	if (0 && p->tot_len == p->len){  // single buffer
             pbuf_ref( p );
 	    if (0){
 		PRINTF("send len:%d\n",p->tot_len);
@@ -240,39 +240,40 @@ static err_t low_level_output( struct netif *netif, /*@only@*/ struct pbuf *p )
 
 	    struct pbuf* pbuf;
 
+	    struct pbuf* needfree=NULL;
+	    int freetimes=0;
 	    while(1){
 		    int type = 0x280;
-		    pbuf = pbuf_alloc(70,p->tot_len,type);
-		    if (pbuf->len != pbuf->tot_len){
-			PRINTF("p->len:%d p->tot_len:%d\n",pbuf->len,pbuf->tot_len);
-		    }else{
-		        break;
-		    }
-
-		    struct pbuf* pbuf1 = pbuf;
-		    pbuf = pbuf_alloc(70,p->tot_len,type);
-		    if (pbuf->len != pbuf->tot_len){
-			pbuf_free(pbuf1);
-			PRINTF("p->len:%d p->tot_len:%d\n",pbuf->len,pbuf->tot_len);
-		    }else{
-			break;
-		    }
-
-		    struct pbuf* pbuf2= pbuf;
+		    //int type = 0x182;
 		    pbuf = pbuf_alloc(30,p->tot_len,type);
-		    if (pbuf->len != pbuf->tot_len){
-			pbuf_free(pbuf1);
-			pbuf_free(pbuf2);
-			pbuf_free(pbuf);
-			PRINTF("p->len:%d p->tot_len:%d\n",pbuf->len,pbuf->tot_len);
+		    if (pbuf != NULL){
+			    if (pbuf->len != pbuf->tot_len){
+				if (needfree == NULL){
+					needfree = pbuf;
+				}else{
+					struct pbuf* next = needfree;
+					while(next->next != NULL)
+						next = next->next;
+					next->next = pbuf;
+				}
+
+				freetimes++;
+				PRINTF("%d pbuf->len:%d pbuf->tot_len:%d p->tot_len:%d\n",freetimes,pbuf->len,pbuf->tot_len,p->tot_len);
+			    }else{
+				if (needfree != NULL)
+					pbuf_free(needfree);
+				break;
+			    }
 		    }else{
-			pbuf_free(pbuf1);
-			pbuf_free(pbuf2);
-			break;
+			    ERROR("temp no memory ");
+			    vTaskDelay(500);
 		    }
 
-        	    LWIP_ASSERT( "alloc chian buffer to single buffer failed", 0);
-		    return -1;
+		    if (freetimes > 5){
+			pbuf_free(needfree);
+        	    	LWIP_ASSERT( "alloc chian buffer to single buffer failed", 0);
+		        return -1;
+		    }
 	    }
 
 	    //PRINTF("p->tot_len:%d 0x%08x\n",p->tot_len,pbuf);
